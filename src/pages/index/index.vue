@@ -1,9 +1,20 @@
 <template>
   <view class="content">
-    <image class="logo" src="/static/logo.png"></image>
-    <view>
-      <text class="title">{{ title }}</text>
+    <view class="search-nav">
+      <van-search
+        class="search-input"
+        v-model="keyword"
+        shape="round"
+        background="#07c160"
+        placeholder="请输入搜索关键词"
+      />
+      <view class="search-btn">
+        <van-button @click="search" icon="search" type="primary"
+          >搜索</van-button
+        >
+      </view>
     </view>
+    <view></view>
   </view>
 </template>
 
@@ -12,10 +23,31 @@ export default {
   data() {
     return {
       title: 'home',
+      keyword: '',
+      videos: [],
     }
   },
   onLoad() {},
-  methods: {},
+  methods: {
+    search() {
+      uni
+        .request({
+          url: `http://localhost:5000/search`,
+          method: 'POST',
+          data: {
+            keywords: this.keyword.trim(),
+            type: 1014,
+          },
+        })
+        .then((res) => {
+          let { code, result } = res[1].data
+          if (code === 200) {
+            this.videos = result.videos
+            console.log(this.videos)
+          }
+        })
+    },
+  },
 }
 </script>
 
@@ -41,5 +73,19 @@ export default {
 .title {
   font-size: 36rpx;
   color: #8f8f94;
+}
+.search-nav {
+  width: 100%;
+  background-color: #07c160;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.search-input {
+  flex: 1;
+}
+.search-btn {
+  width: 25%;
+  background-color: #07c160;
 }
 </style>
