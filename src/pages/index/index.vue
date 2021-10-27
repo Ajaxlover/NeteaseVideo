@@ -14,7 +14,19 @@
         >
       </view>
     </view>
-    <view></view>
+    <view class="list-container">
+      <view
+        class="list-item"
+        @click="goDetail(item)"
+        :key="item.vid"
+        v-for="item in videos"
+      >
+        <view class="image-content">
+          <image class="img" :src="item.coverUrl"></image>
+        </view>
+        <text>{{ item.title }}</text>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -47,6 +59,11 @@ export default {
           }
         })
     },
+    goDetail(item) {
+      uni.navigateTo({
+        url: `/pages/detail/index?vid=${item.vid}`,
+      })
+    },
   },
 }
 </script>
@@ -59,21 +76,6 @@ export default {
   justify-content: center;
 }
 
-.logo {
-  height: 200rpx;
-  width: 200rpx;
-  margin: 200rpx auto 50rpx auto;
-}
-
-.text-area {
-  display: flex;
-  justify-content: center;
-}
-
-.title {
-  font-size: 36rpx;
-  color: #8f8f94;
-}
 .search-nav {
   width: 100%;
   background-color: #07c160;
@@ -87,5 +89,27 @@ export default {
 .search-btn {
   width: 25%;
   background-color: #07c160;
+}
+
+.list-container {
+  padding-left: 10rpx;
+  padding-top: 10rpx;
+}
+.list-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+.image-content {
+  height: 100%;
+  margin-right: 20rpx;
+}
+
+.img {
+  vertical-align: bottom;
+  width: 320rpx;
+  height: 240rpx;
+  border-radius: 30rpx;
+  overflow: hidden;
 }
 </style>

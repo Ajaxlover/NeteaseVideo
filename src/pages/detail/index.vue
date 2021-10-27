@@ -1,6 +1,13 @@
 <template>
   <view class="content">
-    详情下载页面
+    <view class="video-container">
+      <video id="myVideo" :src="url" controls></video>
+    </view>
+    <view class="download-btn">
+      <van-button @click="download" size="large" type="primary"
+        >下载</van-button
+      >
+    </view>
   </view>
 </template>
 
@@ -8,13 +15,47 @@
 export default {
   data() {
     return {
-      title: 'home',
-      keyword: '',
-      videos: [],
+      url: '',
     }
   },
-  onLoad() {},
-  methods: {},
+  onLoad(val) {
+    if (val.vid.trim().length > 8) {
+      // 视频
+      this.getVideo(`http://localhost:5000/video/url`, val.vid, 'video')
+    } else {
+      // mv
+      this.getVideo(`http://localhost:5000/mv/url`, val.vid, 'mv')
+    }
+  },
+  methods: {
+    getVideo(url, id, type) {
+      uni
+        .request({
+          url,
+          method: 'POST',
+          data: {
+            id,
+          },
+        })
+        .then((res) => {
+          console.log(res)
+          if (type == 'mv') {
+            let { code, data } = res[1].data
+            if (code === 200) {
+              this.url = data.url
+            }
+          } else {
+            let { code, urls } = res[1].data
+            if (code === 200) {
+              this.url = urls[0].url
+            }
+          }
+        })
+    },
+    download() {
+      // 下载
+    },
+  },
 }
 </script>
 
@@ -24,5 +65,16 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 20rpx 10rpx 0 10rpx;
+}
+.video-container {
+  width: 100%;
+  margin-bottom: 30rpx;
+}
+#myVideo {
+  width: 100%;
+}
+.download-btn {
+  width: 100%;
 }
 </style>
