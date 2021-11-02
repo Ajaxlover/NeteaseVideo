@@ -4,7 +4,11 @@
       <video id="myVideo" :src="url" controls></video>
     </view>
     <view class="download-btn">
-      <van-button @click="download" size="large" type="primary"
+      <van-button
+        :disabled="isClickAble"
+        @click="download"
+        size="large"
+        type="primary"
         >下载</van-button
       >
     </view>
@@ -16,15 +20,16 @@ export default {
   data() {
     return {
       url: '',
+      isClickAble: false,
     }
   },
   onLoad(val) {
     if (val.vid.trim().length > 8) {
       // 视频
-      this.getVideo(`http://localhost:5000/video/url`, val.vid, 'video')
+      this.getVideo(`http://192.168.1.61:5000/video/url`, val.vid, 'video')
     } else {
       // mv
-      this.getVideo(`http://localhost:5000/mv/url`, val.vid, 'mv')
+      this.getVideo(`http://192.168.1.61:5000/mv/url`, val.vid, 'mv')
     }
   },
   methods: {
@@ -54,6 +59,22 @@ export default {
     },
     download() {
       // 下载
+      let now = new Date().getTime()
+      this.isClickAble = true
+      fetch(this.url)
+        .then((res) => res.blob())
+        .then((blob) => {
+          const a = document.createElement('a')
+          document.body.appendChild(a)
+          a.style.display = 'none'
+          const url = window.URL.createObjectURL(blob)
+          a.href = url
+          a.download = `${now}.mp4`
+          a.click()
+          document.body.removeChild(a)
+          window.URL.revokeObjectURL(url)
+          this.isClickAble = false
+        })
     },
   },
 }
